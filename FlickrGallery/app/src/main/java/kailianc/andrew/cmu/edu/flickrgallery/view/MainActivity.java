@@ -12,10 +12,18 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
  * Author  : KAILIANG CHEN
  * Version : 1.0
  * Date    : 12/13/15
+ *
+ * Main Entry Activity uses a fade in/fade out animation with a background picture.
+ *
+ * MainAcitivity -> FeedActivity(FeedFragment) -> PhotoAcitivty(PhotoFragment)
+ *
  */
 public class MainActivity extends Activity {
+
+    // tag for logcat
     public static final String TAG = PhotoFragment.class.getSimpleName();
 
+    // time span for entry animation
     private final static int SPLASH_TIME_OUT = 2000;
 
     @Override

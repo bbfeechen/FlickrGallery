@@ -19,24 +19,44 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
  * Author  : KAILIANG CHEN
  * Version : 1.0
  * Date    : 12/13/15
+ *
+ * Customized Adapter class for RecyclerView to maintain photo items.
+ *
+ * RecyclerView is used because it is a more advanced and flexible version of ListView,
+ * for displaying large data sets that can be scrolled very efficiently by maintaining
+ * a limited number of views
+ *
+ * Glide is a third party Asynchronous Image Loading library which is used for making
+ * scrolling any kind of a list of images as smooth and  * fast as possible, but Glide
+ * is also effective for almost any case where you need to fetch, resize, and display
+ * a remote image.
+ *
+ * Here, Glide is used to load each photo item to ImageView
+ * in a smooth style(from half size thumbnail to full size).
+ *
  */
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
+
+    // tag for logcat
     public static final String TAG = FeedAdapter.class.getSimpleName();
 
     private Context mContext;
     private List<Feed> mList;
 
+    public FeedAdapter(Context context, List<Feed> list) {
+        mContext = context;
+        mList = list;
+    }
+
+    /**
+     * internal item holder class for each photo (ImageView wrapper)
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
         public ViewHolder(View v) {
             super(v);
             mImageView = (ImageView) v.findViewById(R.id.feed_image);
         }
-    }
-
-    public FeedAdapter(Context context, List<Feed> list) {
-        mContext = context;
-        mList = list;
     }
 
     @Override
@@ -53,7 +73,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PhotoActivity.class);
-                intent.putExtra(PhotoFragment.ARG_FEED, feed);
+                intent.putExtra("feeds", feed);
                 mContext.startActivity(intent);
             }
         });
@@ -68,10 +88,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
         return mList.size();
     }
 
+    /**
+     * function to add in all new content
+     * @param newList : new feed list
+     */
     public void addAll(List<Feed> newList) {
         mList.addAll(newList);
     }
 
+    /**
+     * function to clear contents
+     */
     public void clear() {
         mList.clear();
     }

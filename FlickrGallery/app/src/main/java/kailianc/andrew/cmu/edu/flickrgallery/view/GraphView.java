@@ -14,6 +14,9 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
  * Author  : KAILIANG CHEN
  * Version : 1.0
  * Date    : 12/13/15
+ *
+ * Customized widget for showing histogram of a photo
+ *
  */
 public class GraphView extends View {
 	private static final int HISTOGRAM_DATA_SIZE = 128;
@@ -31,10 +34,10 @@ public class GraphView extends View {
 	private Paint paint;
 
 	/**
-	 * Constructor with paramters {@code Context} and {@code AttributeSet}<br>
+	 * Constructor with paramters {@code Context} and {@code AttributeSet}
 	 * 
-	 * @param context   interface to application specific resources<br>
-	 * @param attrs     attribute set of custom view<p>
+	 * @param context   interface to application specific resources
+	 * @param attrs     attribute set of custom view
 	 */
 	public GraphView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -52,9 +55,9 @@ public class GraphView extends View {
 	}
 	
 	/**
-	 * Receive the histogram data and refresh the display.<br>
+	 * Receive the histogram data and refresh the display
 	 * 
-	 * @param y    histogram data obtained from Platform.<p>
+	 * @param y    histogram data obtained from Platform
 	 */
 	public void setHistogram(int[] y) {
 		mData = y;

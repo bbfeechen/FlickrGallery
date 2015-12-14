@@ -15,7 +15,6 @@
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -23,9 +22,12 @@
             android:name=".view.FeedActivity"
             android:launchMode="singleTop">
 
+            <!-- respond to search intent triggerd from searchview -->
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
+            <!-- search suggestion -->
             <meta-data android:name="android.app.searchable"
                        android:resource="@xml/searchable"/>
         </activity>
@@ -36,6 +38,7 @@
                 android:value=".view.FeedActivity" />
         </activity>
 
+        <!-- search suggestion -->
         <provider android:name=".model.SuggestionProvider"
                   android:authorities="kailianc.andrew.cmu.edu.flickrgallery.model.SuggestionProvider" />
     </application>

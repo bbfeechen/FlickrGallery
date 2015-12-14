@@ -45,11 +45,33 @@ import kailianc.andrew.cmu.edu.flickrgallery.model.SuggestionProvider;
  * Author  : KAILIANG CHEN
  * Version : 1.0
  * Date    : 12/13/15
+ *
+ * Customized fragment class for infinite photo scrolling, automatically requesting
+ * and loading photos when scrolling down.
+ *
+ * In this screen, the following features are supported
+ * 1) Swipe-to-refresh design pattern on the top of the screen, with state machine to show
+ *    fish rotating animation and text
+ * 2) RecyclerView plus GridLayoutManger are used to support efficient scrolling and loading
+ * 3) Volley is used to support fast and efficient HTTP downloading and JSON parsing
+ * 4) Glide is used to support asynchronous image loading for each grid photo item
+ * 5) Configuration changes are handled by setting fragment to retained and providing saving
+ *    and restoring interface
+ * 6) Menu with Search, Search Suggestion, Move back to Top, Clear Search History options is
+ *    provided based on SearchSuggestionProvider and SearchView
+ * 7) Lazy loading which loads 100 photos for scrolling and not loading until next page is needed
+ *
+ * Volley is a fast and efficient third party library for concurrent HTTP request, response,
+ * JSON parse and cancel.
+ *
  */
 public class FeedFragment extends Fragment {
+
+    // tag for logcat
     public static final String TAG = PhotoFragment.class.getSimpleName();
 
-    private static final int SPAN_COUNT = 3;
+    // column number for gallery(RecyclerView with GridLayoutManager)
+    private static final int COLUMN_NUM = 3;
     private static final int FEED_PER_PAGE = 100;
 
     private RecyclerView mRecyclerView;
@@ -85,7 +107,7 @@ public class FeedFragment extends Fragment {
             }
         });
 
-        mLayoutManager = new GridLayoutManager(getActivity(), SPAN_COUNT);
+        mLayoutManager = new GridLayoutManager(getActivity(), COLUMN_NUM);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAdapter = new FeedAdapter(getActivity(), new ArrayList<Feed>());
@@ -105,6 +127,12 @@ public class FeedFragment extends Fragment {
         return view;
     }
 
+    // reset RecyclerView
+    public void refresh() {
+        mAdapter.clear();
+        startLoading();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +141,7 @@ public class FeedFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    // http request and response in JSON format
     private void startLoading() {
         mLoading = true;
         int totalItem = mLayoutManager.getItemCount();
@@ -173,6 +202,7 @@ public class FeedFragment extends Fragment {
         stopLoading();
     }
 
+    // ---- Menu ------
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);
@@ -199,6 +229,7 @@ public class FeedFragment extends Fragment {
                     return true;
                 }
 
+                // set the SearchView text to the selected history word
                 private String getSuggestion(int position) {
                     String suggest = null;
                     if (mSearchView != null) {
@@ -225,10 +256,13 @@ public class FeedFragment extends Fragment {
         boolean selectionHandled;
 
         switch (item.getItemId()) {
+            // search keyword
             case R.id.menu_item_search:
                 getActivity().onSearchRequested();
                 selectionHandled = true;
                 break;
+
+            // clear history
             case R.id.menu_item_clear:
                 SearchRecentSuggestions suggestions = new SearchRecentSuggestions(getActivity(),
                         SuggestionProvider.AUTHORITY, SuggestionProvider.MODE);
@@ -245,6 +279,8 @@ public class FeedFragment extends Fragment {
                 refresh();
                 selectionHandled = true;
                 break;
+
+            // move to top
             case R.id.menu_item_reset:
                 reset();
                 selectionHandled = true;
@@ -256,6 +292,7 @@ public class FeedFragment extends Fragment {
         return selectionHandled;
     }
 
+    // restore state when configuration changes
     public Parcelable getState() {
         if(mRecyclerView != null) {
             Log.d(TAG, "getState");
@@ -264,6 +301,7 @@ public class FeedFragment extends Fragment {
         return null;
     }
 
+    // save state when configuration changes
     public void setState(Parcelable state) {
         if(mRecyclerView != null) {
             Log.d(TAG, "setState");
@@ -271,14 +309,12 @@ public class FeedFragment extends Fragment {
         }
     }
 
+    // move to top
     private void reset() {
         if(mRecyclerView != null) {
             mRecyclerView.smoothScrollToPosition(0);
         }
     }
 
-    public void refresh() {
-        mAdapter.clear();
-        startLoading();
-    }
+
 }

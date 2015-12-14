@@ -39,23 +39,43 @@ import kailianc.andrew.cmu.edu.flickrgallery.model.Feed;
  * Author  : KAILIANG CHEN
  * Version : 1.0
  * Date    : 12/13/15
+ *
+ * Customized fragment class for single photo screen.
+ *
+ * In this screen, Glide is used to load single photo to ImageView
+ * in a smooth style(from half size thumbnail to full size).
+ *
+ * Volley is used for downloading single photo description text.
+ * DownloadManager is used for downloading orignal single photo data.
+ *
+ * Volley is a fast and efficient third party library for HTTP transmission,
+ * JSON format parsing and stream downloading. However, it is not suitable for
+ * large data download. In that occasion, DownloadManager should be used.
+ *
  */
 public class PhotoFragment extends Fragment {
+
+    // tag for logcat
     public static final String TAG = PhotoFragment.class.getSimpleName();
 
-    public static final String ARG_FEED = "ARGS_FEED";
-
-    private Feed mFeed;
     private ProgressBar mProgressBar;
     private TextView mDescText;
-    private RequestQueue mRq;
-    private boolean mLoading = false;
-    private DownloadManager mDownloadManager;
     private ImageView mPhoto;
     private GraphView mrGraphView;
     private GraphView mgGraphView;
     private GraphView mbGraphView;
     private Bitmap mBitmap;
+
+    private Feed mFeed;
+    private RequestQueue mRq;
+    private boolean mLoading = false;
+    private DownloadManager mDownloadManager;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +84,7 @@ public class PhotoFragment extends Fragment {
                 container,
                 false);
 
-        mFeed = (Feed) getActivity().getIntent().getSerializableExtra(ARG_FEED);
+        mFeed = (Feed) getActivity().getIntent().getSerializableExtra("feeds");
 
         mDownloadManager = (DownloadManager) getActivity().getSystemService(
                 getActivity().DOWNLOAD_SERVICE);
@@ -82,6 +102,7 @@ public class PhotoFragment extends Fragment {
         mgGraphView = (GraphView)view.findViewById(R.id.gGraphView);
         mbGraphView = (GraphView)view.findViewById(R.id.bGraphView);
 
+        // work thread for histogram display
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -103,7 +124,6 @@ public class PhotoFragment extends Fragment {
                     int height = mBitmap.getHeight();
                     int width = mBitmap.getWidth();
 
-                    int[] histogramY = new int[height * width];
                     int[] histogramR = new int[height * width];
                     int[] histogramG = new int[height * width];
                     int[] histogramB = new int[height * width];
@@ -130,6 +150,7 @@ public class PhotoFragment extends Fragment {
             }
         }.execute();
 
+        // download original single photo
         LinearLayout downloadView = (LinearLayout) view.findViewById(R.id.download);
         downloadView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,6 +160,7 @@ public class PhotoFragment extends Fragment {
             }
         });
 
+        // open url link for Flickr official app
         LinearLayout openView = (LinearLayout) view.findViewById(R.id.open);
         openView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,17 +169,12 @@ public class PhotoFragment extends Fragment {
             }
         });
 
+        // load original photo
         startLoading();
         return view;
     }
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
+    // function for downloading original photo when download button is pressed
     private void downloadPhoto() {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mFeed.getUrl()));
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
@@ -166,12 +183,14 @@ public class PhotoFragment extends Fragment {
         mDownloadManager.enqueue(request);
     }
 
+    // function for opening Flickr official app when open button is pressed
     private void openApp () {
         String url = UrlManager.getInstance().getFlickrUrl(mFeed.getId());
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(intent);
     }
 
+    // function for loading single photo description by Volley
     private void startLoading() {
         mLoading = true;
         mProgressBar.setVisibility(View.VISIBLE);
@@ -204,6 +223,7 @@ public class PhotoFragment extends Fragment {
         mRq.add(request);
     }
 
+    // cancel downloading request when fragment is stopped
     private void stopLoading() {
         if (mRq != null) {
             mRq.cancelAll(TAG);
@@ -216,10 +236,12 @@ public class PhotoFragment extends Fragment {
         stopLoading();
     }
 
+    // restore state when configuration changes
     public Parcelable getState() {
         return null;
     }
 
+    // save state when configuration changes
     public void setState(Parcelable state) {
     }
 }

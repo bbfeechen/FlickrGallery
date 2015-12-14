@@ -21,13 +21,27 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
  * Author  : KAILIANG CHEN
  * Version : 1.0
  * Date    : 12/13/15
+ *
+ * Customized layout class for supporting swipe-to-refresh function on the top of RecyclerView.
+ *
+ * Swiperefresh is a third party library, which detects the vertical swipe
+ * and triggers callback methods in your app.
+ *
+ * By adding the widget to your layout file as the parent of a ListView or GridView,
+ * and implementing the refresh behavior that gets invoked when the user swipes,
+ * the more efficient and nicer user experience will be provided.
+ *
+ *
  */
 public class SwipeRefresher extends LinearLayout implements
         CustomSwipeRefreshLayout.CustomSwipeRefreshHeadLayout {
 
+    // tag for logct
     public static final String TAG = SwipeRefresher.class.getSimpleName();
 
+    // state machine for animation and text display
     private static final SparseArray<String> STATE_MAP = new SparseArray<>();
+
     private ViewGroup mContainer;
     private TextView mMainTextView;
     private ImageView mImageView;
@@ -46,6 +60,7 @@ public class SwipeRefresher extends LinearLayout implements
         setupLayout();
     }
 
+    // initialize layout
     private void setupLayout() {
         ViewGroup.LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
@@ -91,6 +106,7 @@ public class SwipeRefresher extends LinearLayout implements
         mState = stateCode;
     }
 
+    // display rotate animation from angle -45 to 45 degree in ImageView
     private void startRotate() {
         mImageView.clearAnimation();
         RotateAnimation animation = new RotateAnimation(0, 45, Animation.RELATIVE_TO_SELF,

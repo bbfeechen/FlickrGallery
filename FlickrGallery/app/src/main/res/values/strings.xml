@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Flickr Gallery</string>
+
+    <string name="swipe_to_feed">Swipe to Start Feeding</string>
+    <string name="download">Download</string>
+    <string name="open_in_app">Open in App</string>
+    <string name="pull_to_refresh">Pull to refresh sharks</string>
+    <string name="release_to_refresh">Release to refresh sharks</string>
+    <string name="refreshing">Refreshing...</string>
+
+    <string name="search">Search</string>
+    <string name="clear_search">Clear Search History</string>
+    <string name="start_polling">Move To Top</string>
+    <string name="search_hint">Search Flickr</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

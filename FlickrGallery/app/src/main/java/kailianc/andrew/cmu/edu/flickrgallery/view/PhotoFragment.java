@@ -36,21 +36,21 @@ import kailianc.andrew.cmu.edu.flickrgallery.control.UrlManager;
 import kailianc.andrew.cmu.edu.flickrgallery.model.Feed;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Customized fragment class for single photo screen.
+ * Customized fragment class for single photo screen.<p>
  *
- * In this screen, Glide is used to load single photo to ImageView
- * in a smooth style(from half size thumbnail to full size).
+ * In this screen, Glide is used to load single photo to ImageView<br>
+ * in a smooth style(from half size thumbnail to full size).<p>
  *
- * Volley is used for downloading single photo description text.
- * DownloadManager is used for downloading orignal single photo data.
+ * Volley is used for downloading single photo description text.<br>
+ * DownloadManager is used for downloading orignal single photo data.<p>
  *
- * Volley is a fast and efficient third party library for HTTP transmission,
- * JSON format parsing and stream downloading. However, it is not suitable for
- * large data download. In that occasion, DownloadManager should be used.
+ * Volley is a fast and efficient third party library for HTTP transmission,<br>
+ * JSON format parsing and stream downloading. However, it is not suitable for<br>
+ * large data download. In that occasion, DownloadManager should be used.<p>
  *
  */
 public class PhotoFragment extends Fragment {
@@ -114,7 +114,13 @@ public class PhotoFragment extends Fragment {
                             into(128, 128).
                             get();
                 } catch (final ExecutionException e) {
+                    if(e != null) {
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 } catch (final InterruptedException e) {
+                    if(e != null) {
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 }
                 return null;
             }
@@ -205,7 +211,9 @@ public class PhotoFragment extends Fragment {
                             String desc = descObj.getString("_content");
                             mDescText.setText(desc);
                         } catch (JSONException e) {
-
+                            if(e != null) {
+                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
                         }
                         mProgressBar.setVisibility(View.GONE);
                         mLoading = false;
@@ -213,8 +221,10 @@ public class PhotoFragment extends Fragment {
                 },
                 new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-
+                    public void onErrorResponse(VolleyError e) {
+                        if(e != null) {
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
         );

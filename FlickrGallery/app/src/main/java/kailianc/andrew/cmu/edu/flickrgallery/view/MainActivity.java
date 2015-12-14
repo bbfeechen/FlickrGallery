@@ -9,13 +9,13 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
 
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Main Entry Activity uses a fade in/fade out animation with a background picture.
+ * Main Entry Activity uses a fade in/fade out animation with a background picture.<p>
  *
- * MainAcitivity -> FeedActivity(FeedFragment) -> PhotoAcitivty(PhotoFragment)
+ * MainAcitivity -> FeedActivity(FeedFragment) -> PhotoAcitivty(PhotoFragment)<p>
  *
  */
 public class MainActivity extends Activity {

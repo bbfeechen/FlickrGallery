@@ -3,9 +3,9 @@ package kailianc.andrew.cmu.edu.flickrgallery.model;
 import java.io.Serializable;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
  * Concrete class for photo's information to be used for creating url.
  * Only used attributes are defined, e.g. photo id, secrete string, server, farm.

@@ -16,23 +16,23 @@ import kailianc.andrew.cmu.edu.flickrgallery.model.Feed;
 import kailianc.andrew.cmu.edu.flickrgallery.R;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Customized Adapter class for RecyclerView to maintain photo items.
+ * Customized Adapter class for RecyclerView to maintain photo items.<p>
  *
- * RecyclerView is used because it is a more advanced and flexible version of ListView,
- * for displaying large data sets that can be scrolled very efficiently by maintaining
- * a limited number of views
+ * RecyclerView is used because it is a more advanced and flexible version of ListView,<br>
+ * for displaying large data sets that can be scrolled very efficiently by maintaining<br>
+ * a limited number of views<p<br>>
  *
- * Glide is a third party Asynchronous Image Loading library which is used for making
- * scrolling any kind of a list of images as smooth and  * fast as possible, but Glide
- * is also effective for almost any case where you need to fetch, resize, and display
- * a remote image.
+ * Glide is a third party Asynchronous Image Loading library which is used for making<br>
+ * scrolling any kind of a list of images as smooth and  * fast as possible, but Glide<br>
+ * is also effective for almost any case where you need to fetch, resize, and display<br>
+ * a remote image.<p>
  *
- * Here, Glide is used to load each photo item to ImageView
- * in a smooth style(from half size thumbnail to full size).
+ * Here, Glide is used to load each photo item to ImageView<br>
+ * in a smooth style(from half size thumbnail to full size).<p>
  *
  */
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
@@ -49,7 +49,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     }
 
     /**
-     * internal item holder class for each photo (ImageView wrapper)
+     * internal item holder class for each photo (ImageView wrapper)<p>
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
@@ -89,15 +89,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     }
 
     /**
-     * function to add in all new content
-     * @param newList : new feed list
+     * function to add in all new content<br>
+     * @param newList : new feed list<p>
      */
     public void addAll(List<Feed> newList) {
         mList.addAll(newList);
     }
 
     /**
-     * function to clear contents
+     * function to clear contents<p>
      */
     public void clear() {
         mList.clear();

@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -42,27 +43,27 @@ import kailianc.andrew.cmu.edu.flickrgallery.model.SuggestionProvider;
 
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Customized fragment class for infinite photo scrolling, automatically requesting
- * and loading photos when scrolling down.
+ * Customized fragment class for infinite photo scrolling, automatically requesting<br>
+ * and loading photos when scrolling down.<p>
  *
- * In this screen, the following features are supported
- * 1) Swipe-to-refresh design pattern on the top of the screen, with state machine to show
- *    fish rotating animation and text
- * 2) RecyclerView plus GridLayoutManger are used to support efficient scrolling and loading
- * 3) Volley is used to support fast and efficient HTTP downloading and JSON parsing
- * 4) Glide is used to support asynchronous image loading for each grid photo item
- * 5) Configuration changes are handled by setting fragment to retained and providing saving
- *    and restoring interface
- * 6) Menu with Search, Search Suggestion, Move back to Top, Clear Search History options is
- *    provided based on SearchSuggestionProvider and SearchView
- * 7) Lazy loading which loads 100 photos for scrolling and not loading until next page is needed
+ * In this screen, the following features are supported<br>
+ * 1) Swipe-to-refresh design pattern on the top of the screen, with state machine to show<br>
+ *    fish rotating animation and text<br>
+ * 2) RecyclerView plus GridLayoutManger are used to support efficient scrolling and loading<br>
+ * 3) Volley is used to support fast and efficient HTTP downloading and JSON parsing<br>
+ * 4) Glide is used to support asynchronous image loading for each grid photo item<br>
+ * 5) Configuration changes are handled by setting fragment to retained and providing saving<br>
+ *    and restoring interface<br>
+ * 6) Menu with Search, Search Suggestion, Move back to Top, Clear Search History options is<br>
+ *    provided based on SearchSuggestionProvider and SearchView<br>
+ * 7) Lazy loading which loads 100 photos for scrolling and not loading until next page is needed<p>
  *
- * Volley is a fast and efficient third party library for concurrent HTTP request, response,
- * JSON parse and cancel.
+ * Volley is a fast and efficient third party library for concurrent HTTP request, response,<br>
+ * JSON parse and cancel.<p>
  *
  */
 public class FeedFragment extends Fragment {
@@ -173,6 +174,9 @@ public class FeedFragment extends Fragment {
                                 result.add(feed);
                             }
                         } catch (JSONException e) {
+                            if(e != null) {
+                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
                         }
                         mAdapter.addAll(result);
                         mAdapter.notifyDataSetChanged();
@@ -182,7 +186,10 @@ public class FeedFragment extends Fragment {
                 },
                 new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error) {
+                    public void onErrorResponse(VolleyError e) {
+                        if(e != null) {
+                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
         );
@@ -315,6 +322,4 @@ public class FeedFragment extends Fragment {
             mRecyclerView.smoothScrollToPosition(0);
         }
     }
-
-
 }

@@ -9,15 +9,15 @@ import android.util.Log;
 import kailianc.andrew.cmu.edu.flickrgallery.R;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Main Screen for single photo browsing, downloading and linking to official Flickr app.
+ * Main Screen for single photo browsing, downloading and linking to official Flickr app.<p>
  *
- * Similar to FeedFragment, PhotoFragment is used in this activity for two purposes:
- * 1) handle configuration changes (plus setRetainInstance(true) in fragment)
- * 2) handle multiple size screens
+ * Similar to FeedFragment, PhotoFragment is used in this activity for two purposes:<br>
+ * 1) handle configuration changes (plus setRetainInstance(true) in fragment)<br>
+ * 2) handle multiple size screens<p>
  *
  */
 public class PhotoActivity extends AppCompatActivity {
@@ -49,12 +49,12 @@ public class PhotoActivity extends AppCompatActivity {
     }
 
     /**
-     * function for state saving during configuration change
-     * when the activity transits into a background state,
-     * it will be called to allow you to save away any dynamic
-     * instance state in your activity into the given Bundle.
+     * function for state saving during configuration change<br>
+     * when the activity transits into a background state,<br>
+     * it will be called to allow you to save away any dynamic<br>
+     * instance state in your activity into the given Bundle.<p>
      *
-     * @param outState : bundle for containing state information
+     * @param outState : bundle for containing state information<p>
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {

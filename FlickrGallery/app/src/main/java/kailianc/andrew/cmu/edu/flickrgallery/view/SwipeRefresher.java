@@ -18,18 +18,18 @@ import com.reginald.swiperefresh.CustomSwipeRefreshLayout.State;
 import kailianc.andrew.cmu.edu.flickrgallery.R;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Customized layout class for supporting swipe-to-refresh function on the top of RecyclerView.
+ * Customized layout class for supporting swipe-to-refresh function on the top of RecyclerView.<p>
  *
- * Swiperefresh is a third party library, which detects the vertical swipe
- * and triggers callback methods in your app.
+ * Swiperefresh is a third party library, which detects the vertical swipe<br>
+ * and triggers callback methods in your app.<p>
  *
- * By adding the widget to your layout file as the parent of a ListView or GridView,
- * and implementing the refresh behavior that gets invoked when the user swipes,
- * the more efficient and nicer user experience will be provided.
+ * By adding the widget to your layout file as the parent of a ListView or GridView,<br>
+ * and implementing the refresh behavior that gets invoked when the user swipes,<br>
+ * the more efficient and nicer user experience will be provided.<p>
  *
  *
  */

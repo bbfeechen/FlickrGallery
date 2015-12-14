@@ -3,9 +3,9 @@ package kailianc.andrew.cmu.edu.flickrgallery.model;
 import android.content.SearchRecentSuggestionsProvider;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
  * Customized Content Provider class for search suggestion function.
  *

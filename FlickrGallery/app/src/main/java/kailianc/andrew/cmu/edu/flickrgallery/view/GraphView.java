@@ -11,11 +11,11 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
 
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Customized widget for showing histogram of a photo
+ * Customized widget for showing histogram of a photo<p>
  *
  */
 public class GraphView extends View {
@@ -34,10 +34,10 @@ public class GraphView extends View {
 	private Paint paint;
 
 	/**
-	 * Constructor with paramters {@code Context} and {@code AttributeSet}
+	 * Constructor with paramters {@code Context} and {@code AttributeSet}<p>
 	 * 
-	 * @param context   interface to application specific resources
-	 * @param attrs     attribute set of custom view
+	 * @param context   interface to application specific resources<br>
+	 * @param attrs     attribute set of custom view<p>
 	 */
 	public GraphView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -55,9 +55,9 @@ public class GraphView extends View {
 	}
 	
 	/**
-	 * Receive the histogram data and refresh the display
+	 * Receive the histogram data and refresh the display<p>
 	 * 
-	 * @param y    histogram data obtained from Platform
+	 * @param y    histogram data obtained from Platform<p>
 	 */
 	public void setHistogram(int[] y) {
 		mData = y;

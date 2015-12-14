@@ -6,13 +6,13 @@ import android.util.Log;
 import kailianc.andrew.cmu.edu.flickrgallery.model.Credentials;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * UrlManager is a Singleton class that controls the url conversion for feeds, photo downloading.
- * It maintains the information of Flickr link, API related methods and response file format
- * (JSON/XML) and photo units(page) every time downloaded.
+ * UrlManager is a Singleton class that controls the url conversion for feeds, photo downloading.<br>
+ * It maintains the information of Flickr link, API related methods and response file format<br>
+ * (JSON/XML) and photo units(page) every time downloaded.<p>
  *
  */
 public class UrlManager {
@@ -46,10 +46,10 @@ public class UrlManager {
     }
 
     /**
-     * function to create a url for downloading feeds
-     * @param query : search keyword in SearchView
-     * @param page : requested page number of all related photos
-     * @return : url for downloading all feeds(information for photos)
+     * function to create a url for downloading feeds<br>
+     * @param query : search keyword in SearchView<br>
+     * @param page : requested page number of all related photos<br>
+     * @return : url for downloading all feeds(information for photos)<p>
      */
     public static String getFeedsUrl(String query, int page) {
         String url;
@@ -76,18 +76,18 @@ public class UrlManager {
     }
 
     /**
-     * function to create a url for viewing photo in Flickr app
-     * @param id : single photo id
-     * @return : url for viewing photo in Flickr flagship app
+     * function to create a url for viewing photo in Flickr app<br>
+     * @param id : single photo id<br>
+     * @return : url for viewing photo in Flickr flagship app<p>
      */
     public static String getFlickrUrl(String id) {
         return String.format(FLICKR_URL, id);
     }
 
     /**
-     * function to create a url for obtaining photo description text
-     * @param id : single photo id
-     * @return : url for corresponding photo id
+     * function to create a url for obtaining photo description text<br>
+     * @param id : single photo id<br>
+     * @return : url for corresponding photo id<p>
      */
     public static String getPhotoInfoUrl(String id) {
         return Uri.parse(ENDPOINT).buildUpon()

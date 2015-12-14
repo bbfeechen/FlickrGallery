@@ -1,11 +1,11 @@
 package kailianc.andrew.cmu.edu.flickrgallery.model;
 
 /**
- * Author  : KAILIANG CHEN
- * Version : 1.0
- * Date    : 12/13/15
+ * Author  : KAILIANG CHEN<br>
+ * Version : 1.0<br>
+ * Date    : 12/13/15<p>
  *
- * Utility class to maintain developer's credentials, e.g. username, password, api_key, etc,.
+ * Utility class to maintain developer's credentials, e.g. username, password, api_key, etc,.<p>
  *
  */
 public class Credentials {

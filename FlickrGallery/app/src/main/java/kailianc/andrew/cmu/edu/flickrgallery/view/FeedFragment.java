@@ -22,23 +22,20 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.List;
 
+import javax.inject.Inject;
 import kailianc.andrew.cmu.edu.flickrgallery.R;
-import kailianc.andrew.cmu.edu.flickrgallery.control.UrlManager;
-import kailianc.andrew.cmu.edu.flickrgallery.model.Feed;
+import kailianc.andrew.cmu.edu.flickrgallery.control.FlickerClient;
+import kailianc.andrew.cmu.edu.flickrgallery.dagger.FlickerApplication;
+import kailianc.andrew.cmu.edu.flickrgallery.model.GetPhotoInfoResponse;
+import kailianc.andrew.cmu.edu.flickrgallery.model.GetPhotosResponse;
+import kailianc.andrew.cmu.edu.flickrgallery.model.Photo;
+import kailianc.andrew.cmu.edu.flickrgallery.model.Photos;
 import kailianc.andrew.cmu.edu.flickrgallery.model.SuggestionProvider;
 
 
@@ -66,35 +63,34 @@ import kailianc.andrew.cmu.edu.flickrgallery.model.SuggestionProvider;
  * JSON parse and cancel.<p>
  *
  */
-public class FeedFragment extends Fragment {
+public class FeedFragment extends Fragment implements FlickerClient.Listener {
 
-    // tag for logcat
     public static final String TAG = PhotoFragment.class.getSimpleName();
 
-    // column number for gallery(RecyclerView with GridLayoutManager)
     private static final int COLUMN_NUM = 3;
     private static final int FEED_PER_PAGE = 100;
 
-    private RecyclerView mRecyclerView;
+    @Inject FlickerClient mFlickerClient;
+
+    @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.swipe_refresh) CustomSwipeRefreshLayout mSwipeRefreshLayout;
+
     private FeedAdapter mAdapter;
     private GridLayoutManager mLayoutManager;
-    private CustomSwipeRefreshLayout mSwipeRefreshLayout;
-    private RequestQueue mRq;
     private boolean mLoading = false;
     private boolean mHasMore = true;
     private SearchView mSearchView = null;
+
+    private int mCurrentRequestPage = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_feed,
-                container,
-                false);
 
-        mRq = Volley.newRequestQueue(getActivity());
+        View view = inflater.inflate(R.layout.fragment_feed, container, false);
+        ButterKnife.bind(this, view);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -111,10 +107,9 @@ public class FeedFragment extends Fragment {
         mLayoutManager = new GridLayoutManager(getActivity(), COLUMN_NUM);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mAdapter = new FeedAdapter(getActivity(), new ArrayList<Feed>());
+        mAdapter = new FeedAdapter(getActivity(), new ArrayList<Photo>());
         mRecyclerView.setAdapter(mAdapter);
 
-        mSwipeRefreshLayout = (CustomSwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
         mSwipeRefreshLayout.setCustomHeadview(new SwipeRefresher(getActivity()));
         mSwipeRefreshLayout.setRefreshMode(CustomSwipeRefreshLayout.REFRESH_MODE_PULL);
         mSwipeRefreshLayout.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
@@ -124,11 +119,11 @@ public class FeedFragment extends Fragment {
             }
         });
 
+
         startLoading();
         return view;
     }
 
-    // reset RecyclerView
     public void refresh() {
         mAdapter.clear();
         startLoading();
@@ -138,9 +133,40 @@ public class FeedFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ((FlickerApplication)getActivity().getApplication()).getAppComponent().inject(this);
+        mFlickerClient.setListener(this);
+
         setRetainInstance(true);
         setHasOptionsMenu(true);
     }
+
+    @Override
+    public void onDestroy() {
+        mFlickerClient.removeListener(this);
+        super.onDestroy();
+    }
+
+    @Override
+    public void onQuerySuccess(GetPhotosResponse response) {
+        Photos photos = response.photos();
+        mHasMore = photos.page() == mCurrentRequestPage;
+
+        mAdapter.addAll(photos.photos());
+        mAdapter.notifyDataSetChanged();
+        mLoading = false;
+        mSwipeRefreshLayout.refreshComplete();
+    }
+
+    @Override
+    public void onQueryFailure(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onGetInfoSuccess(GetPhotoInfoResponse response) { }
+
+    @Override
+    public void onGetInfoFailure(String message) { }
 
     // http request and response in JSON format
     private void startLoading() {
@@ -150,66 +176,12 @@ public class FeedFragment extends Fragment {
 
         String query = PreferenceManager
                 .getDefaultSharedPreferences(getActivity())
-                .getString(UrlManager.PREF_SEARCH_QUERY, null);
+                .getString(FlickerClient.PREF_SEARCH_QUERY, null);
 
-        String url = UrlManager.getInstance().getFeedsUrl(query, page);
-        JsonObjectRequest request = new JsonObjectRequest(url,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        List<Feed> result = new ArrayList<Feed>();
-                        try {
-                            JSONObject photos = response.getJSONObject("photos");
-                            if (photos.getInt("pages") == page) {
-                                mHasMore = false;
-                            }
-                            JSONArray photoArr = photos.getJSONArray("photo");
-                            for (int i = 0 ; i < photoArr.length() ; i++) {
-                                JSONObject feedObj = photoArr.getJSONObject(i);
-                                Feed feed = new Feed(
-                                        feedObj.getString("id"),
-                                        feedObj.getString("secret"),
-                                        feedObj.getString("server"),
-                                        feedObj.getString("farm"));
-                                result.add(feed);
-                            }
-                        } catch (JSONException e) {
-                            if(e != null) {
-                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        mAdapter.addAll(result);
-                        mAdapter.notifyDataSetChanged();
-                        mLoading = false;
-                        mSwipeRefreshLayout.refreshComplete();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        if(e != null) {
-                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }
-        );
-        request.setTag(TAG);
-        mRq.add(request);
+        mFlickerClient.query(query, page);
+        mCurrentRequestPage = page;
     }
 
-    private void stopLoading() {
-        if (mRq != null) {
-            mRq.cancelAll(TAG);
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        stopLoading();
-    }
-
-    // ---- Menu ------
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_main, menu);
@@ -281,8 +253,8 @@ public class FeedFragment extends Fragment {
 
                 PreferenceManager.getDefaultSharedPreferences(getActivity())
                         .edit()
-                        .putString(UrlManager.PREF_SEARCH_QUERY, null)
-                        .commit();
+                        .putString(FlickerClient.PREF_SEARCH_QUERY, null)
+                        .apply();
                 refresh();
                 selectionHandled = true;
                 break;

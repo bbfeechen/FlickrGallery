@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-
 import kailianc.andrew.cmu.edu.flickrgallery.R;
-
+import rx.subjects.BehaviorSubject;
 
 /**
  * Author  : KAILIANG CHEN<br>
@@ -20,10 +19,6 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
  */
 public class MainActivity extends Activity {
 
-    // tag for logcat
-    public static final String TAG = PhotoFragment.class.getSimpleName();
-
-    // time span for entry animation
     private final static int SPLASH_TIME_OUT = 2000;
 
     @Override
@@ -41,5 +36,4 @@ public class MainActivity extends Activity {
             }
         }, SPLASH_TIME_OUT);
     }
-
 }

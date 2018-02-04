@@ -22,7 +22,6 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
  */
 public class PhotoActivity extends AppCompatActivity {
 
-    // tag for logcat
     public static final String TAG = PhotoFragment.class.getSimpleName();
 
     @Override

@@ -19,21 +19,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
 import kailianc.andrew.cmu.edu.flickrgallery.R;
-import kailianc.andrew.cmu.edu.flickrgallery.control.UrlManager;
-import kailianc.andrew.cmu.edu.flickrgallery.model.Feed;
+import kailianc.andrew.cmu.edu.flickrgallery.control.FlickerClient;
+import kailianc.andrew.cmu.edu.flickrgallery.dagger.FlickerApplication;
+import kailianc.andrew.cmu.edu.flickrgallery.model.GetPhotoInfoResponse;
+import kailianc.andrew.cmu.edu.flickrgallery.model.GetPhotosResponse;
+import kailianc.andrew.cmu.edu.flickrgallery.model.Photo;
+import kailianc.andrew.cmu.edu.flickrgallery.model.PhotoDescription;
 
 /**
  * Author  : KAILIANG CHEN<br>
@@ -53,54 +52,54 @@ import kailianc.andrew.cmu.edu.flickrgallery.model.Feed;
  * large data download. In that occasion, DownloadManager should be used.<p>
  *
  */
-public class PhotoFragment extends Fragment {
+public class PhotoFragment extends Fragment implements FlickerClient.Listener {
 
-    // tag for logcat
-    public static final String TAG = PhotoFragment.class.getSimpleName();
+    @Inject FlickerClient mFlickerClient;
 
-    private ProgressBar mProgressBar;
-    private TextView mDescText;
-    private ImageView mPhoto;
-    private GraphView mrGraphView;
-    private GraphView mgGraphView;
-    private GraphView mbGraphView;
+    @BindView(R.id.progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.desc_text) TextView mDescText;
+    @BindView(R.id.photo) ImageView mImageView;
+    @BindView(R.id.rGraphView) GraphView mrGraphView;
+    @BindView(R.id.gGraphView) GraphView mgGraphView;
+    @BindView(R.id.bGraphView) GraphView mbGraphView;
+    @BindView(R.id.download) LinearLayout mDownloadView;
+    @BindView(R.id.open) LinearLayout mOpenView;
+
     private Bitmap mBitmap;
-
-    private Feed mFeed;
-    private RequestQueue mRq;
-    private boolean mLoading = false;
+    private Photo mPhoto;
     private DownloadManager mDownloadManager;
+    private Parcelable mState;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        ((FlickerApplication)getActivity().getApplication()).getAppComponent().inject(this);
+        mFlickerClient.setListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        mFlickerClient.removeListener(this);
+        super.onDestroy();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_photo,
-                container,
-                false);
+        View view = inflater.inflate(R.layout.fragment_photo, container, false);
+        ButterKnife.bind(this, view);
 
-        mFeed = (Feed) getActivity().getIntent().getSerializableExtra("feeds");
+        mPhoto = (Photo) getActivity().getIntent().getSerializableExtra("photo");
 
         mDownloadManager = (DownloadManager) getActivity().getSystemService(
                 getActivity().DOWNLOAD_SERVICE);
-        mRq = Volley.newRequestQueue(getActivity());
 
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
         mProgressBar.setVisibility(View.VISIBLE);
 
-        mDescText = (TextView) view.findViewById(R.id.desc_text);
-
-        mPhoto = (ImageView) view.findViewById(R.id.photo);
-        Glide.with(this).load(mFeed.getUrl()).thumbnail(0.5f).into(mPhoto);
-
-        mrGraphView = (GraphView)view.findViewById(R.id.rGraphView);
-        mgGraphView = (GraphView)view.findViewById(R.id.gGraphView);
-        mbGraphView = (GraphView)view.findViewById(R.id.bGraphView);
+        mImageView = (ImageView) view.findViewById(R.id.photo);
+        Glide.with(this).load(mPhoto.url()).thumbnail(0.5f).into(mImageView);
 
         // work thread for histogram display
         new AsyncTask<Void, Void, Void>() {
@@ -109,18 +108,12 @@ public class PhotoFragment extends Fragment {
                 try {
                     mBitmap = Glide.
                             with(getActivity()).
-                            load(mFeed.getUrl()).
+                            load(mPhoto.url()).
                             asBitmap().
                             into(128, 128).
                             get();
-                } catch (final ExecutionException e) {
-                    if(e != null) {
-                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                } catch (final InterruptedException e) {
-                    if(e != null) {
-                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
+                } catch (final ExecutionException | InterruptedException e) {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 return null;
             }
@@ -152,13 +145,12 @@ public class PhotoFragment extends Fragment {
                         mgGraphView.setHistogram(histogramG);
                         mbGraphView.setHistogram(histogramB);
                     }
-                };
+                }
             }
         }.execute();
 
         // download original single photo
-        LinearLayout downloadView = (LinearLayout) view.findViewById(R.id.download);
-        downloadView.setOnClickListener(new View.OnClickListener() {
+        mDownloadView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 downloadPhoto();
@@ -167,8 +159,7 @@ public class PhotoFragment extends Fragment {
         });
 
         // open url link for Flickr official app
-        LinearLayout openView = (LinearLayout) view.findViewById(R.id.open);
-        openView.setOnClickListener(new View.OnClickListener() {
+        mOpenView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openApp();
@@ -180,78 +171,52 @@ public class PhotoFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onQuerySuccess(GetPhotosResponse response) { }
+
+    @Override
+    public void onQueryFailure(String message) { }
+
+    @Override
+    public void onGetInfoSuccess(GetPhotoInfoResponse response) {
+        PhotoDescription description = response.photoInfo().description();
+        mDescText.setText(description.content());
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onGetInfoFailure(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+    }
+
     // function for downloading original photo when download button is pressed
     private void downloadPhoto() {
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mFeed.getUrl()));
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mPhoto.url()));
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setTitle("SharkFeed Download");
-        request.setDescription(mFeed.getUrl());
+        request.setDescription(mPhoto.url());
         mDownloadManager.enqueue(request);
     }
 
     // function for opening Flickr official app when open button is pressed
     private void openApp () {
-        String url = UrlManager.getInstance().getFlickrUrl(mFeed.getId());
+        String url = FlickerClient.getFlickrUrl(mPhoto.id());
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(intent);
     }
 
     // function for loading single photo description by Volley
     private void startLoading() {
-        mLoading = true;
         mProgressBar.setVisibility(View.VISIBLE);
-        String url =  UrlManager.getInstance().getPhotoInfoUrl(mFeed.getId());
-        JsonObjectRequest request = new JsonObjectRequest(url,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject photo = response.getJSONObject("photo");
-                            JSONObject descObj = photo.getJSONObject("description");
-                            String desc = descObj.getString("_content");
-                            mDescText.setText(desc);
-                        } catch (JSONException e) {
-                            if(e != null) {
-                                Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        mProgressBar.setVisibility(View.GONE);
-                        mLoading = false;
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError e) {
-                        if(e != null) {
-                            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }
-        );
-
-        request.setTag(TAG);
-        mRq.add(request);
-    }
-
-    // cancel downloading request when fragment is stopped
-    private void stopLoading() {
-        if (mRq != null) {
-            mRq.cancelAll(TAG);
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        stopLoading();
+        mFlickerClient.getPhotoInfo(mPhoto.id());
     }
 
     // restore state when configuration changes
     public Parcelable getState() {
-        return null;
+        return mState;
     }
 
-    // save state when configuration changes
-    public void setState(Parcelable state) {
+    public void setState(Parcelable parcelable) {
+        mState = parcelable;
     }
 }

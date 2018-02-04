@@ -9,9 +9,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
 import kailianc.andrew.cmu.edu.flickrgallery.R;
-import kailianc.andrew.cmu.edu.flickrgallery.control.UrlManager;
+import kailianc.andrew.cmu.edu.flickrgallery.control.FlickerClient;
 import kailianc.andrew.cmu.edu.flickrgallery.model.SuggestionProvider;
 
 /**
@@ -32,12 +31,12 @@ import kailianc.andrew.cmu.edu.flickrgallery.model.SuggestionProvider;
  */
 public class FeedActivity extends AppCompatActivity {
 
-    // tag for logcat
     public static final String TAG = FeedActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_feed);
 
         FragmentManager fm = getSupportFragmentManager();
@@ -112,8 +111,8 @@ public class FeedActivity extends AppCompatActivity {
             // store search keyword
             PreferenceManager.getDefaultSharedPreferences(this)
                     .edit()
-                    .putString(UrlManager.PREF_SEARCH_QUERY, query)
-                    .commit();
+                    .putString(FlickerClient.PREF_SEARCH_QUERY, query)
+                    .apply();
             FragmentManager fm = getSupportFragmentManager();
             Fragment fragment = fm.findFragmentById(R.id.fragmentContainer);
             if(fragment != null) {

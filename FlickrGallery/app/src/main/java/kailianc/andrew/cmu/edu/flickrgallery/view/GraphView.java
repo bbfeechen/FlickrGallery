@@ -29,7 +29,6 @@ public class GraphView extends View {
 	private static final float HISTOGRAM_DISPLAY_MAX_VALUE =
 			(HISTOGRAM_RESIZE_MAX_VALUE * 2 * HISTOGRAM_DISPLAY_PERCENTAGE);
 
-	private int mColor;
 	private int[] mData;
 	private Paint paint;
 
@@ -43,9 +42,12 @@ public class GraphView extends View {
 		super(context, attrs);
 
 		TypedArray attr = context.obtainStyledAttributes(attrs, R.styleable.GraphView);
-		mColor = attr.getColor(R.styleable.GraphView_histocolor, OPAQUE_BLACK);
+		int mColor = attr.getColor(R.styleable.GraphView_histocolor, OPAQUE_BLACK);
+
 		paint = new Paint();
 		paint.setColor(mColor);
+
+		attr.recycle();
 	}
 
 	@Override
@@ -85,7 +87,7 @@ public class GraphView extends View {
 					workData = (int)HISTOGRAM_DISPLAY_MAX_VALUE;
 				}
 	
-				h = (float) (graphheight * workData / HISTOGRAM_DISPLAY_MAX_VALUE);
+				h = graphheight * workData / HISTOGRAM_DISPLAY_MAX_VALUE;
 				if(h > graphheight) {
 					h = graphheight;
 				}

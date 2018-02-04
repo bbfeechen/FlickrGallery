@@ -1,7 +1,6 @@
 package kailianc.andrew.cmu.edu.flickrgallery.view;
 
 import android.content.Context;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -11,10 +10,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout.State;
-
 import kailianc.andrew.cmu.edu.flickrgallery.R;
 
 /**
@@ -36,24 +35,9 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
 public class SwipeRefresher extends LinearLayout implements
         CustomSwipeRefreshLayout.CustomSwipeRefreshHeadLayout {
 
-    // tag for logct
-    public static final String TAG = SwipeRefresher.class.getSimpleName();
-
-    // state machine for animation and text display
-    private static final SparseArray<String> STATE_MAP = new SparseArray<>();
-
-    private ViewGroup mContainer;
-    private TextView mMainTextView;
-    private ImageView mImageView;
-    private Space mSpace;
-    private int mState = -1;
-
-    {
-        STATE_MAP.put(0, "STATE_NORMAL");
-        STATE_MAP.put(1, "STATE_READY");
-        STATE_MAP.put(2, "STATE_REFRESHING");
-        STATE_MAP.put(3, "STATE_COMPLETE");
-    }
+    @BindView(R.id.header_text) TextView mMainTextView;
+    @BindView(R.id.fish_img) ImageView mImageView;
+    @BindView(R.id.space) Space mSpace;
 
     public SwipeRefresher(Context context) {
         super(context);
@@ -64,12 +48,11 @@ public class SwipeRefresher extends LinearLayout implements
     private void setupLayout() {
         ViewGroup.LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-        mContainer = (LinearLayout) LayoutInflater.from(getContext()).inflate(
+        ViewGroup mContainer = (LinearLayout) LayoutInflater.from(getContext()).inflate(
                 R.layout.widget_swiperefresher, null);
         addView(mContainer, lp);
-        mSpace = (Space) findViewById(R.id.space);
-        mImageView = (ImageView) findViewById(R.id.fish_img);
-        mMainTextView = (TextView) findViewById(R.id.header_text);
+
+        ButterKnife.bind(this);
     }
 
     @Override
@@ -103,7 +86,6 @@ public class SwipeRefresher extends LinearLayout implements
 
             default:
         }
-        mState = stateCode;
     }
 
     // display rotate animation from angle -45 to 45 degree in ImageView

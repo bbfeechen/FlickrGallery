@@ -8,12 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import kailianc.andrew.cmu.edu.flickrgallery.model.Feed;
 import kailianc.andrew.cmu.edu.flickrgallery.R;
+import kailianc.andrew.cmu.edu.flickrgallery.model.Photo;
 
 /**
  * Author  : KAILIANG CHEN<br>
@@ -35,15 +37,12 @@ import kailianc.andrew.cmu.edu.flickrgallery.R;
  * in a smooth style(from half size thumbnail to full size).<p>
  *
  */
-public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
-
-    // tag for logcat
-    public static final String TAG = FeedAdapter.class.getSimpleName();
+class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
 
     private Context mContext;
-    private List<Feed> mList;
+    private List<Photo> mList;
 
-    public FeedAdapter(Context context, List<Feed> list) {
+    FeedAdapter(Context context, List<Photo> list) {
         mContext = context;
         mList = list;
     }
@@ -51,34 +50,34 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
     /**
      * internal item holder class for each photo (ImageView wrapper)<p>
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView mImageView;
-        public ViewHolder(View v) {
-            super(v);
-            mImageView = (ImageView) v.findViewById(R.id.feed_image);
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.feed_image) ImageView mImageView;
+
+        ViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
         }
     }
 
     @Override
     public FeedAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_feed, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Feed feed = mList.get(position);
+        final Photo photo = mList.get(position);
         holder.mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PhotoActivity.class);
-                intent.putExtra("feeds", feed);
+                intent.putExtra("photo", photo);
                 mContext.startActivity(intent);
             }
         });
         Glide.with(mContext)
-                .load(feed.getUrl())
+                .load(photo.url())
                 .thumbnail(0.5f)
                 .into(holder.mImageView);
     }
@@ -92,14 +91,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ViewHolder> {
      * function to add in all new content<br>
      * @param newList : new feed list<p>
      */
-    public void addAll(List<Feed> newList) {
+    void addAll(List<Photo> newList) {
         mList.addAll(newList);
     }
 
     /**
      * function to clear contents<p>
      */
-    public void clear() {
+    void clear() {
         mList.clear();
     }
 }
